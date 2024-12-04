@@ -62,26 +62,40 @@ class YA_Push_Photo:
         else:
             return responses.json()
 
-    def put_yandex(self):
+    def put_yandex(self,dict_photo):
         headers = {
             'Authorization': self.yandex_token
         }
         url = f'{self.base_drees_YA}/upload'
-        params = {'path': 'API_VK.jpg/Photo1',
-                 'url': 'https://sun9-11.userapi.com/s/v1/ig2/MXPIGCZXojervq7InLzroI1GGlcZG9mRbBynJbEAOwT-reGAqBx6eykVHsxvS7lqmLglU7RdBY3fwngYLzA2gGA0.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,1080x1440,1280x1707,1440x1920,1920x2560&from=bu',
-                  'disable_redirects': False
-                  }
-        responses = requests.post(url, headers=headers, params=params)
-        return responses.json()
+
+        for key,values in dict_photo.items():
+            if key < 50:
+                params = {'path': 'API_VK.jpg/неизвестный пока',
+                        'url': values,
+                        'disable_redirects': False
+                    }
+                responses = requests.post(url, headers=headers, params=params)
+            else:
+                params = {'path': 'API_VK.jpg/уже лучше',
+                          'url': values,
+                          'disable_redirects': False
+                          }
+                responses = requests.post(url, headers=headers, params=params)
+        if 200 <= responses.status_code <300:
+            return 'uploaded'
+        else::
+            return 'daunloadet you'
+
+
 
 
 iVk = Vkontakte_all_photo(access_token)
 token_check = iVk.check_token()
 Im_check_man = iVk.get_photos(user_id)
 iYA = YA_Push_Photo(Im_check_man,yandex_token,'API_VK.jpg')
-YA_check = iYA.put_yandex()
+YA_check = iYA.put_yandex(Im_check_man)
 Creater_path = iYA.create_path()
 print(Creater_path)
 print(YA_check)
-# print(token_check)
+#print(token_check)
 #pprint(Im_check_man)
