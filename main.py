@@ -19,10 +19,10 @@ class Vkontakte_all_photo:
                         'extended': 1,
                         'v': self.version}
 
-    def get_photos(self,user_ids):
+    def get_photos(self,user_ids, count = 10):
 
         url = f'{self.base_drees}photos.getAll'
-        params = {'user_id': user_ids}
+        params = {'user_id': user_ids,'count': count}
         params.update(self.params)
         responses = requests.get(url, params=params)
 
@@ -58,6 +58,8 @@ class YA_Push_Photo:
         responses = requests.put(url, headers=headers, params=params)
         if responses.status_code == 409:
             return 'already created'
+        elif 200 <= responses.status_code < 300:
+            return 'created'
         else:
             return responses.json()
 
@@ -90,7 +92,7 @@ class YA_Push_Photo:
 
 iVk = Vkontakte_all_photo(access_token)
 token_check = iVk.check_token()
-Im_check_man = iVk.get_photos(user_id)
+Im_check_man = iVk.get_photos(user_id, count=5)
 iYA = YA_Push_Photo(Im_check_man,yandex_token,'API_VK.jpg')
 YA_check = iYA.put_yandex(Im_check_man)
 Creater_path = iYA.create_path()
