@@ -1,6 +1,6 @@
 import configparser
 from http.client import responses
-
+from tqdm import tqdm
 import requests
 from pprint import pprint
 config = configparser.ConfigParser()
@@ -8,7 +8,7 @@ config.read('settings.ini')
 access_token = config["Tokens"]['access_token']
 user_id = config["Tokens"]['user_id']
 yandex_token = config["Tokens"]['yandex_token']
-print(len(access_token))
+#print(len(access_token))
 
 class Vkontakte_all_photo:
     def __init__(self, access_token, version = 5.199 ):
@@ -28,11 +28,10 @@ class Vkontakte_all_photo:
 
         if 200 <= responses.status_code < 300:
             items = responses.json()['response']['items']
-            urls = [item['orig_photo']['url'] for item in items]
+            urls = [item['sizes'][-1]['url'] for item in items]
             likes = [item['likes']['count'] for item in items]
-            result = dict(zip(likes,urls))
+            result = dict(zip(likes, urls))
             return result
-
         else:
             return 'I think that your problem (token)'
 
@@ -68,7 +67,7 @@ class YA_Push_Photo:
         }
         url = f'{self.base_drees_YA}/upload'
 
-        for key,values in dict_photo.items():
+        for key,values in tqdm(dict_photo.items(), desc="Uploading photos to Yandex.Disk"):
             if key < 50:
                 params = {'path': 'API_VK.jpg/неизвестный пока',
                         'url': values,
@@ -83,7 +82,7 @@ class YA_Push_Photo:
                 responses = requests.post(url, headers=headers, params=params)
         if 200 <= responses.status_code <300:
             return 'uploaded'
-        else::
+        else:
             return 'daunloadet you'
 
 
