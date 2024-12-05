@@ -1,28 +1,27 @@
 import configparser
-from http.client import responses
+#from http.client import responses
 from tqdm import tqdm
 import requests
-from pprint import pprint
+#from pprint import pprint
 config = configparser.ConfigParser()
 config.read('settings.ini')
 access_token = config["Tokens"]['access_token']
-user_id = config["Tokens"]['user_id']
 yandex_token = config["Tokens"]['yandex_token']
 #print(len(access_token))
 
-class Vkontakte_all_photo:
-    def __init__(self, access_token, version = 5.199 ):
-        self.access_token = access_token
+class VkontakteAllPhoto:
+    def __init__(self, vk_token, version = 5.199 ):
+        self.access_token = vk_token
         self.version = version
         self.base_drees = 'https://api.vk.com/method/'
         self.params = {'access_token': self.access_token,
                         'extended': 1,
                         'v': self.version}
 
-    def get_photos(self,user_ids, count = 10):
+    def get_photos(self, count = 10):
 
         url = f'{self.base_drees}photos.getAll'
-        params = {'user_id': user_ids,'count': count}
+        params = {'user_id': input('you user id  '),'count': count}
         params.update(self.params)
         responses = requests.get(url, params=params)
 
@@ -40,9 +39,9 @@ class Vkontakte_all_photo:
         response = requests.get(url, params=self.params)
         return response.json()
 
-class YA_Push_Photo:
-    def __init__ (self, result: dict, yandex_token, file_name: str):
-        self.yandex_token = yandex_token
+class YAPushPhoto:
+    def __init__ (self, result: dict, ya_token, file_name: str):
+        self.yandex_token = ya_token
         self.base_drees_YA = 'https://cloud-api.yandex.net/v1/disk/resources'
         self.upload_file = result
         self.file_name = file_name
@@ -90,13 +89,13 @@ class YA_Push_Photo:
 
 
 
-iVk = Vkontakte_all_photo(access_token)
+iVk = VkontakteAllPhoto(access_token)
 token_check = iVk.check_token()
-Im_check_man = iVk.get_photos(user_id, count=5)
-iYA = YA_Push_Photo(Im_check_man,yandex_token,'API_VK.jpg')
+Im_check_man = iVk.get_photos(count=5)
+iYA = YAPushPhoto(Im_check_man,yandex_token,'API_VK.jpg')
 YA_check = iYA.put_yandex(Im_check_man)
-Creater_path = iYA.create_path()
-print(Creater_path)
+Created_path = iYA.create_path()
+print(Created_path)
 print(YA_check)
 #print(token_check)
 #pprint(Im_check_man)
